@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@mui/material";
 import { spaceTheme } from "./Themes";
-import "./App.css";
+//import "./index.css";
 import ContentRouterLayout from "./components/ContentRouterLayout";
 
 function App() {

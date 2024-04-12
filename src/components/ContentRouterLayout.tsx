@@ -1,11 +1,18 @@
 import { Container } from "@mui/material";
 import React, { useEffect } from "react";
-import { Route, Routes, BrowserRouter, useNavigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  BrowserRouter,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import Login from "./Login";
 import { useAuth } from "../contexts/AuthProviderContext";
 import RegisterForm from "./RegisterForm";
 import HomePage from "./HomePage";
 import { validateToken } from "../API";
+import LoggedInPageLayout from "./layouts/LoggedInPageLayout";
 
 const ProtectedRoute = ({ element, token }: any) => {
   const navigate = useNavigate();
@@ -17,10 +24,13 @@ const ProtectedRoute = ({ element, token }: any) => {
     console.log("element", element);
   }, [token]);
   if (token) {
-    return <div>hello {element}</div>;
+    return <LoggedInPageLayout>{element}</LoggedInPageLayout>;
   } else {
     return <></>;
   }
+};
+const TestPage = () => {
+  return <div>hello</div>;
 };
 const ContentRouterLayout: React.FC = () => {
   const { token } = useAuth();
@@ -40,12 +50,13 @@ const ContentRouterLayout: React.FC = () => {
             path="/"
             element={<ProtectedRoute token={token} element={<HomePage />} />}
           />
+          <Route
+            path="/test"
+            element={<ProtectedRoute token={token} element={<TestPage />} />}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
-          <Route
-            path="*"
-            element={<ProtectedRoute element={<div>not found</div>} />}
-          />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
     </Container>

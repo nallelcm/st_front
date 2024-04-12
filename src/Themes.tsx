@@ -4,10 +4,10 @@ export const spaceTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#64ffda", // Teal
+      main: "#5dbea3", // Green
     },
     secondary: {
-      main: "#ff4081", // Pink
+      main: "#a881af", // Purple
     },
     background: {
       default: "#0a0a0a", // Dark Space
