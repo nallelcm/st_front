@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import {
   Route,
@@ -7,21 +7,20 @@ import {
   useNavigate,
   Navigate,
 } from "react-router-dom";
+
 import Login from "./Login";
-import { useAuth } from "../contexts/AuthProviderContext";
 import RegisterForm from "./RegisterForm";
 import HomePage from "./HomePage";
-import { validateToken } from "../API";
 import LoggedInPageLayout from "./layouts/LoggedInPageLayout";
+
+import { useAuth } from "../contexts/AuthProviderContext";
 
 const ProtectedRoute = ({ element, token }: any) => {
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("Running useEffect in ProtectedRoute, token:", token);
     if (!token) {
       navigate("/login");
     }
-    console.log("element", element);
   }, [token]);
   if (token) {
     return <LoggedInPageLayout>{element}</LoggedInPageLayout>;
@@ -30,18 +29,10 @@ const ProtectedRoute = ({ element, token }: any) => {
   }
 };
 const TestPage = () => {
-  return <div>hello</div>;
+  return <Typography>hello</Typography>;
 };
 const ContentRouterLayout: React.FC = () => {
   const { token } = useAuth();
-  useEffect(() => {
-    validateToken().then((valid) => {
-      console.log("valid", valid);
-      if (!valid) {
-        console.log("invalid token");
-      }
-    });
-  }, []);
   return (
     <Container>
       <BrowserRouter>
