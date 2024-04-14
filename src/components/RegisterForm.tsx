@@ -57,10 +57,16 @@ const FormComponent: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<String>();
   const [formError, setFormError] = useState<FormData>(formDataDefaults);
   const [formData, setFormData] = useState<FormData>(formDataDefaults);
-
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const navigate = useNavigate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  useEffect(() => {
+    if (registerSuccess) {
+      navigate("/login");
+    }
+  }, [registerSuccess]);
   const validateForm = () => {
     const {
       firstName,
@@ -129,7 +135,6 @@ const FormComponent: React.FC = () => {
     event.preventDefault();
     setErrorMessage("");
     const validForm = validateForm();
-    console.log(validForm);
     if (!validForm) {
       setErrorMessage("Please fill out all fields.");
       return;
@@ -144,7 +149,32 @@ const FormComponent: React.FC = () => {
         username,
         password,
         spaceTraderToken
-      );
+      ).then((response) => {
+        if (response.success) {
+          setRegisterSuccess(true);
+        } else {
+          if (response.error.user) {
+            const errors: FormData = formError;
+            if (response.error.user.firstName) {
+              errors.firstName = response.error.user.firstName;
+            }
+            if (response.error.user.lastName) {
+              errors.lastName = response.error.user.lastName;
+            }
+            if (response.error.user.email) {
+              errors.email = response.error.user.email;
+            }
+            if (response.error.user.username) {
+              errors.username = response.error.user.username;
+            }
+            if (response.error.user.password) {
+              errors.password = response.error.user.password;
+            }
+            setFormError(errors);
+          }
+          setErrorMessage("An error occurred during registration.");
+        }
+      });
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message || "An error occurred.");
