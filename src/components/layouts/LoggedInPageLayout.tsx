@@ -1,24 +1,82 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import AppBar from "@mui/material/AppBar";
-//import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
+import {
+  Container,
+  Typography,
+  List,
+  Box,
+  Drawer,
+  AppBar,
+  Toolbar,
+  Divider,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import { Link, useLocation } from "react-router-dom";
+
+// Icons
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import { Link } from "react-router-dom";
-import { Container, Paper } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import QuizIcon from "@mui/icons-material/Quiz";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
+import { useAuth } from "../../contexts/AuthProviderContext";
+import { useState } from "react";
 
 const drawerWidth = 200;
 
+interface LayoutListItemProps {
+  text: string;
+  icon: any;
+  link?: string;
+  clickAction?: () => void;
+  location: string;
+}
+
+const LayoutListItem: React.FC<LayoutListItemProps> = ({
+  text,
+  icon,
+  link,
+  clickAction,
+  location,
+}: any) => {
+  const CustomListItemButton = ({ children }: any) => {
+    if (clickAction) {
+      return <ListItemButton onClick={clickAction}>{children}</ListItemButton>;
+    } else {
+      return (
+        <ListItemButton selected={location === link} component={Link} to={link}>
+          {children}
+        </ListItemButton>
+      );
+    }
+  };
+  return (
+    <ListItem key={text} disablePadding>
+      <CustomListItemButton>
+        <ListItemIcon>{icon}</ListItemIcon>
+        <ListItemText primary={text} />
+      </CustomListItemButton>
+    </ListItem>
+  );
+};
+
 const LoggedInPageLayout = ({ children }: any) => {
+  const location = useLocation();
+  const { logout, userData } = useAuth();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Box sx={{ display: "block" }}>
       <AppBar
@@ -27,8 +85,43 @@ const LoggedInPageLayout = ({ children }: any) => {
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            Clipped drawer
+            SpaceTrader API
           </Typography>
+          <Typography variant="h6" noWrap component="div" flex={1}></Typography>
+          <Box>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <AccountCircleIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem>{userData?.username}</MenuItem>
+              <Divider />
+              <MenuItem component={Link} to="/" onClick={handleClose}>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -45,23 +138,25 @@ const LoggedInPageLayout = ({ children }: any) => {
         <Toolbar />
         <Box>
           <List>
-            <ListItem key={"Home"} disablePadding>
-              <ListItemButton component={Link} to="/">
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Home"} />
-              </ListItemButton>
-            </ListItem>
+            <LayoutListItem
+              text="Home"
+              icon={<HomeIcon />}
+              link="/"
+              location={location.pathname}
+            />
+            <LayoutListItem
+              text="Test"
+              icon={<QuizIcon />}
+              link="/test"
+              location={location.pathname}
+            />
             <Divider />
-            <ListItem key={"Test"} disablePadding>
-              <ListItemButton component={Link} to="/test">
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Test"} />
-              </ListItemButton>
-            </ListItem>
+            <LayoutListItem
+              text="Logout"
+              icon={<LogoutIcon />}
+              clickAction={logout}
+              location={location.pathname}
+            />
           </List>
         </Box>
       </Drawer>
@@ -72,19 +167,4 @@ const LoggedInPageLayout = ({ children }: any) => {
     </Box>
   );
 };
-
-// import "./pagelayout.css";
-// const PageLayout = ({ children }: any) => {
-//   return (
-//     <div className="bg-gray-100 min-h-screen">
-//       <header className="bg-white shadow">
-//         <div className="container mx-auto px-4">
-//           <h1 className="text-3xl font-bold py-4">My App</h1>
-//         </div>
-//       </header>
-//       <main className="container mx-auto px-4 py-4">{children}</main>
-//     </div>
-//   );
-// };
-
 export default LoggedInPageLayout;
