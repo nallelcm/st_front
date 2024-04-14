@@ -52,7 +52,6 @@ export const loginUser = async (
   }
 };
 export const refreshAuthToken = async (): Promise<string | null> => {
-  console.log("refreshAuthToken");
   const refreshToken = localStorage.getItem("refreshToken");
   if (refreshToken) {
     try {
@@ -66,7 +65,6 @@ export const refreshAuthToken = async (): Promise<string | null> => {
       // The refresh failed, remove the tokens from local storage
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
-      console.log("refresh failed");
       return null;
     }
   } else {
@@ -82,33 +80,37 @@ export const registerUser = async (
   password: string,
   spaceTraderToken: string
 ) => {
-  console.log("registerUser");
   try {
     const response = await AuthAPI.post(AuthBaseURL + "register/", {
-      first_name: firstName,
-      last_name: lastName,
-      email,
-      username,
-      password,
-      repeat_password: password,
-      space_trader_token: spaceTraderToken,
+      user: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        username,
+        password,
+        repeat_password: password,
+      },
+      spacetrader_code: spaceTraderToken,
     });
     if (response.status === 201) {
       return { success: true };
     }
+
+    if (response.status === 400) {
+      return { success: false, error: response.data.user };
+    }
     return { success: false, error: "An error occurred during registration." };
   } catch (error) {
-    const apiError = error as AxiosError<{ detail: string }>;
+    const apiError = error as AxiosError<string>;
     var errorMessage = "Network Error";
     if (apiError.response) {
-      errorMessage = apiError.response.data.detail;
+      errorMessage = apiError.response.data;
     }
     return { success: false, error: errorMessage };
   }
 };
 AuthAPI.interceptors.request.use(
   (config) => {
-    console.log("interceptor request");
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -131,9 +133,12 @@ AuthAPI.interceptors.response.use(
   }
 );
 
-interface UserJWT extends JwtPayload {
+export interface UserJWT extends JwtPayload {
   username: string;
-  spaceTraderToken: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  spacetrader_code: string;
 }
 export const getUserData = (): UserJWT | undefined => {
   const token = localStorage.getItem("token");

@@ -6,11 +6,11 @@ import React, {
   ReactNode,
 } from "react";
 
-import { loginUser, getUserData } from "../API";
+import { loginUser, getUserData, UserJWT } from "../API";
 interface AuthContextType {
   token: string | null;
   refreshToken: string | null;
-  username: string | null;
+  userData: UserJWT | undefined;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
+  const [userData, setUserData] = useState<UserJWT>();
   useEffect(() => {
     const receivedToken = localStorage.getItem("token");
     const receivedRefreshToken = localStorage.getItem("refreshToken");
@@ -31,9 +31,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (receivedRefreshToken) {
       setRefreshToken(receivedRefreshToken);
     }
-    const userData = getUserData();
-    if (userData) {
-      setUsername(userData.username);
+    const userInfo = getUserData();
+    if (userInfo) {
+      setUserData(userInfo);
     }
   }, []);
   const login = async (username: string, password: string): Promise<void> => {
@@ -45,9 +45,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         if (token && refreshToken) {
           setToken(token);
           setRefreshToken(refreshToken);
-          const userData = getUserData();
-          if (userData) {
-            setUsername(userData.username);
+          const userInfo = getUserData();
+          if (userInfo) {
+            setUserData(userInfo);
           }
         } else {
           throw new Error("Token not found in local storage");
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ token, refreshToken, username, login, logout }}
+      value={{ token, refreshToken, userData, login, logout }}
     >
       {children}
     </AuthContext.Provider>
