@@ -6,13 +6,14 @@ import React, {
   ReactNode,
 } from "react";
 
-import { loginUser, getUserData, UserJWT } from "../API";
+import { loginUser, getUserData, UserJWT, validateToken } from "../API";
 interface AuthContextType {
   token: string | null;
   refreshToken: string | null;
   userData: UserJWT | undefined;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  validateLogin: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserJWT>();
   useEffect(() => {
+    console.log("AuthContext useEffect");
     const receivedToken = localStorage.getItem("token");
     const receivedRefreshToken = localStorage.getItem("refreshToken");
     if (receivedToken) {
@@ -36,6 +38,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUserData(userInfo);
     }
   }, []);
+  const validateLogin = async (): Promise<string | null> => {
+    const newToken = await validateToken();
+    if (newToken) {
+      setToken(newToken);
+      return newToken;
+    }
+    return null;
+  };
   const login = async (username: string, password: string): Promise<void> => {
     const response = await loginUser(username, password);
     try {
@@ -69,7 +79,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ token, refreshToken, userData, login, logout }}
+      value={{ token, refreshToken, userData, login, logout, validateLogin }}
     >
       {children}
     </AuthContext.Provider>
