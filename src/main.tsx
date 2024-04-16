@@ -9,11 +9,13 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { AuthProvider } from "./contexts/AuthProviderContext";
+import { SpaceTraderProvider } from "./contexts/SpaceTraderContext.tsx";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
-      {/* <h1 className="text-3xl font-bold underline">Hello world!</h1> */}
-      <App />
+      <SpaceTraderProvider>
+        <App />
+      </SpaceTraderProvider>
     </AuthProvider>
   </React.StrictMode>
 );
