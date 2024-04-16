@@ -5,27 +5,33 @@ const AuthBaseURL = "http://duck-django.slothnet.lan/api/";
 export const AuthAPI = axios.create({
   baseURL: AuthBaseURL,
 });
+export const SpaceTraderAPI = axios.create({
+  baseURL: "https://api.spacetraders.io/v2/",
+});
 interface LoginResponse {
   access: string;
   refresh: string;
 }
-export const validateToken = async (): Promise<boolean> => {
+export const validateToken = async (): Promise<string | null> => {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
-      return false;
+      return null;
     }
     const decodedToken = jwtDecode<JwtPayload>(token);
     if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
       const newToken = await refreshAuthToken();
-      return newToken !== null;
+      return newToken;
     }
     const response = await AuthAPI.post(AuthBaseURL + "token/verify/", {
       token,
     });
-    return response.status === 200;
+    if (response.status !== 200) {
+      return response.data.access;
+    }
+    return null;
   } catch (error) {
-    return false;
+    return null;
   }
 };
 
@@ -148,3 +154,14 @@ export const getUserData = (): UserJWT | undefined => {
   }
   return undefined;
 };
+
+SpaceTraderAPI.interceptors.request.use(
+  (config) => {
+    const token = getUserData()?.spacetrader_code;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
