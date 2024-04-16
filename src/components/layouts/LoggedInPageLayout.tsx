@@ -19,12 +19,13 @@ import { Link, useLocation } from "react-router-dom";
 // Icons
 import ListItemIcon from "@mui/material/ListItemIcon";
 import HomeIcon from "@mui/icons-material/Home";
-import QuizIcon from "@mui/icons-material/Quiz";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 
 import { useAuth } from "../../contexts/AuthProviderContext";
-import { useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { validateToken } from "../../API";
 
 const drawerWidth = 200;
 
@@ -55,7 +56,7 @@ const LayoutListItem: React.FC<LayoutListItemProps> = ({
     }
   };
   return (
-    <ListItem key={text} disablePadding>
+    <ListItem disablePadding>
       <CustomListItemButton>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={text} />
@@ -66,9 +67,26 @@ const LayoutListItem: React.FC<LayoutListItemProps> = ({
 
 const LoggedInPageLayout = ({ children }: any) => {
   const location = useLocation();
-  const { logout, userData } = useAuth();
+  const { logout, userData, validateLogin } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const menuItems = [
+    { text: "Home", icon: <HomeIcon />, link: "/" },
+    { text: "Fleet", icon: <RocketLaunchIcon />, link: "/fleet" },
+    {
+      text: "Logout",
+      icon: <LogoutIcon />,
+      clickAction: logout,
+      divider: true,
+    },
+  ];
+
+  useEffect(() => {
+    const isValid = validateLogin();
+    if (!isValid) {
+      logout();
+    }
+  }, []);
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -114,12 +132,11 @@ const LoggedInPageLayout = ({ children }: any) => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem>{userData?.username}</MenuItem>
-              <Divider />
-              <MenuItem component={Link} to="/" onClick={handleClose}>
-                Profile
+              <MenuItem component={Link} to="/profile" onClick={handleClose}>
+                {userData?.username}'s Profile
               </MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <Divider />
+              <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>
@@ -138,25 +155,18 @@ const LoggedInPageLayout = ({ children }: any) => {
         <Toolbar />
         <Box>
           <List>
-            <LayoutListItem
-              text="Home"
-              icon={<HomeIcon />}
-              link="/"
-              location={location.pathname}
-            />
-            <LayoutListItem
-              text="Test"
-              icon={<QuizIcon />}
-              link="/test"
-              location={location.pathname}
-            />
-            <Divider />
-            <LayoutListItem
-              text="Logout"
-              icon={<LogoutIcon />}
-              clickAction={logout}
-              location={location.pathname}
-            />
+            {menuItems.map((item) => (
+              <Fragment key={item.text + "lli"}>
+                {item.divider && <Divider />}
+                <LayoutListItem
+                  text={item.text}
+                  icon={item.icon}
+                  link={item.link}
+                  clickAction={item.clickAction}
+                  location={location.pathname}
+                />
+              </Fragment>
+            ))}
           </List>
         </Box>
       </Drawer>

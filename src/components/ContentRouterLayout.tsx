@@ -1,4 +1,4 @@
-import { Container, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import React, { useEffect } from "react";
 import {
   Route,
@@ -10,10 +10,21 @@ import {
 
 import Login from "./Login";
 import RegisterForm from "./RegisterForm";
-import HomePage from "./HomePage";
+import HomePage from "./authcomp/HomePage";
+import Profile from "./authcomp/Profile";
 import LoggedInPageLayout from "./layouts/LoggedInPageLayout";
 
 import { useAuth } from "../contexts/AuthProviderContext";
+import Fleet from "./authcomp/Fleet";
+
+const routes = [
+  { path: "/", element: <HomePage />, protected: true },
+  { path: "/fleet", element: <Fleet />, protected: true },
+  { path: "/login", element: <Login />, protected: false },
+  { path: "/register", element: <RegisterForm />, protected: false },
+  { path: "/profile", element: <Profile />, protected: true },
+  { path: "*", element: <Navigate to="/" /> },
+];
 
 const ProtectedRoute = ({ element, token }: any) => {
   const navigate = useNavigate();
@@ -28,26 +39,26 @@ const ProtectedRoute = ({ element, token }: any) => {
     return <></>;
   }
 };
-const TestPage = () => {
-  return <Typography>hello</Typography>;
-};
+
 const ContentRouterLayout: React.FC = () => {
   const { token } = useAuth();
   return (
     <Container>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={<ProtectedRoute token={token} element={<HomePage />} />}
-          />
-          <Route
-            path="/test"
-            element={<ProtectedRoute token={token} element={<TestPage />} />}
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                route.protected ? (
+                  <ProtectedRoute token={token} element={route.element} />
+                ) : (
+                  route.element
+                )
+              }
+            />
+          ))}
         </Routes>
       </BrowserRouter>
     </Container>
