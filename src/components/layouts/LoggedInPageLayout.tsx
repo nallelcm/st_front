@@ -25,7 +25,6 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 
 import { useAuth } from "../../contexts/AuthProviderContext";
 import { Fragment, useEffect, useState } from "react";
-import { validateToken } from "../../API";
 
 const drawerWidth = 200;
 
