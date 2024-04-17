@@ -1,24 +1,28 @@
-import { Box, Divider, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { Ship } from "../../types";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import FleetNavigationTab from "./fleet/FleetNavigationTab";
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+  element?: ReactNode;
 }
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, element, ...other } = props;
 
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`horizontal-tabpanel-${index}`}
       aria-labelledby={`horizontal-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
+      {value === index && (
+        <Box sx={{ p: 3 }}>{element ? element : children}</Box>
+      )}
+    </Box>
   );
 }
 interface FleetShipPanelProps {
@@ -34,6 +38,7 @@ const FleetShipPanel: React.FC<FleetShipPanelProps> = ({ ship }) => {
       <Tabs
         orientation="horizontal"
         variant="scrollable"
+        scrollButtons="auto"
         value={value}
         onChange={handleChange}
         sx={{ borderBottom: 1, borderColor: "divider" }}
@@ -48,12 +53,16 @@ const FleetShipPanel: React.FC<FleetShipPanelProps> = ({ ship }) => {
         <Tab label="Mounts" />
         <Tab label="Fuel" />
       </Tabs>
-      <TabPanel value={value} index={0}>
-        <Typography>Navigation</Typography>
-        <Divider />
-        <Typography>Location: {ship.nav.route.origin.symbol}</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel
+        value={value}
+        index={0}
+        element={<FleetNavigationTab ship={ship} />}
+      />
+      <TabPanel
+        value={value}
+        index={1}
+        element={<FleetNavigationTab ship={ship} />}
+      >
         <Typography>Crew</Typography>
       </TabPanel>
       <TabPanel value={value} index={2}>
