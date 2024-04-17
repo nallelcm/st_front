@@ -8,8 +8,8 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import { useSpaceTrader } from "../../contexts/SpaceTraderContext";
-import { FleetResponse, Ship } from "../../types";
+import { useSpaceTrader } from "../../../contexts/SpaceTraderContext";
+import { FleetResponse, Ship } from "../../../types";
 import { useState } from "react";
 import FleetShipPanel from "./FleetShipPanel";
 

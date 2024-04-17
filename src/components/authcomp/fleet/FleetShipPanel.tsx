@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import { Ship } from "../../types";
+import { Ship } from "../../../types";
 import { ReactNode, useState } from "react";
-import FleetNavigationTab from "./fleet/FleetNavigationTab";
+import FleetNavigationTab from "./FleetNavigationTab";
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;

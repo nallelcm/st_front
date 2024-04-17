@@ -15,7 +15,7 @@ import Profile from "./authcomp/Profile";
 import LoggedInPageLayout from "./layouts/LoggedInPageLayout";
 
 import { useAuth } from "../contexts/AuthProviderContext";
-import Fleet from "./authcomp/Fleet";
+import Fleet from "./authcomp/fleet/Fleet";
 
 const routes = [
   { path: "/", element: <HomePage />, protected: true },
