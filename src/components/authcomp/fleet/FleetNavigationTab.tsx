@@ -3,9 +3,8 @@ import { Ship, ShipNav } from "../../../types";
 interface NavigationProps {
   ship: Ship;
 }
-const FleetNavigationTab: React.FC<NavigationProps> = ({ ship }) => {
+const InfoPanel: React.FC<NavigationProps> = ({ ship }) => {
   const nav: ShipNav = ship.nav;
-  console.log(nav.route.arrival);
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
@@ -44,6 +43,11 @@ const FleetNavigationTab: React.FC<NavigationProps> = ({ ship }) => {
       </Grid>
     </Grid>
   );
+};
+const FleetNavigationTab: React.FC<NavigationProps> = ({ ship }) => {
+  const nav: ShipNav = ship.nav;
+  console.log(nav.route.arrival);
+  return <InfoPanel ship={ship} />;
 };
 
 export default FleetNavigationTab;
