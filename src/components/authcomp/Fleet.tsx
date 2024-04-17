@@ -60,7 +60,7 @@ const FleetData = ({ fleet }: FleetDataProps) => {
         variant="scrollable"
         value={value}
         onChange={handleChange}
-        sx={{ borderRight: 1, borderColor: "divider" }}
+        sx={{ borderRight: 1, borderColor: "divider", width: "300px" }}
       >
         {fleet.ships.map((ship: Ship, index: number) => (
           <Tab
