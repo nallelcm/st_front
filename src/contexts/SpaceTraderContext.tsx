@@ -4,7 +4,7 @@ import { AgentData, FleetResponse } from "../types";
 import { useAuth } from "./AuthProviderContext";
 interface SpaceTraderContextType {
   agent: AgentData | null;
-  fetchAgent: (forceUpdate?: boolean) => Promise<AgentData>;
+  fetchAgent: (forceUpdate?: boolean) => Promise<AgentData | null>;
   fleet: FleetResponse | null;
   fetchFleet: (
     forceUpdate?: boolean,
@@ -21,15 +21,20 @@ export const SpaceTraderProvider: React.FC<{ children: ReactNode }> = ({
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [fleet, setFleet] = useState<FleetResponse | null>(null);
 
-  const fetchAgent = async (forceUpdate = false): Promise<AgentData> => {
-    const { validateLogin } = useAuth();
-    await validateLogin();
-    if (agent && !forceUpdate) {
-      return agent;
+  const fetchAgent = async (forceUpdate = false): Promise<AgentData | null> => {
+    try {
+      const { validateLogin } = useAuth();
+      await validateLogin();
+      if (agent && !forceUpdate) {
+        return agent;
+      }
+      const response = await SpaceTraderAPI.get("my/agent");
+      setAgent(response.data.data);
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
-    const response = await SpaceTraderAPI.get("my/agent");
-    setAgent(response.data.data);
-    return response.data.data;
   };
 
   const fetchFleet = async (
@@ -37,24 +42,29 @@ export const SpaceTraderProvider: React.FC<{ children: ReactNode }> = ({
     page = 1
   ): Promise<FleetResponse | null> => {
     const { validateLogin } = useAuth();
-    await validateLogin();
-    console.log("fetching fleet");
-    if ((fleet && !forceUpdate) || page !== 1) {
-      return fleet;
-    }
-    const response = await SpaceTraderAPI.get(`my/ships?page=${page}`);
-    const fleetResponse: FleetResponse = {
-      ships: response.data.data,
-      meta: response.data.meta,
-    };
-    if (fleetResponse) {
-      if (fleet) {
-        fleetResponse.ships = fleet.ships.concat(fleetResponse.ships);
+    try {
+      await validateLogin();
+      console.log("fetching fleet");
+      if ((fleet && !forceUpdate) || page !== 1) {
+        return fleet;
       }
+      const response = await SpaceTraderAPI.get(`my/ships?page=${page}`);
+      const fleetResponse: FleetResponse = {
+        ships: response.data.data,
+        meta: response.data.meta,
+      };
+      if (fleetResponse) {
+        if (fleet) {
+          fleetResponse.ships = fleet.ships.concat(fleetResponse.ships);
+        }
+      }
+      console.log(fleetResponse);
+      setFleet(fleetResponse);
+      return fleetResponse;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
-    console.log(fleetResponse);
-    setFleet(fleetResponse);
-    return fleetResponse;
   };
 
   return (
