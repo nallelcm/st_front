@@ -2,6 +2,7 @@ import {
   Box,
   Chip,
   Divider,
+  Grid,
   Skeleton,
   Stack,
   Tab,
@@ -48,66 +49,77 @@ const FleetData = ({ fleet }: FleetDataProps) => {
     setValue(newValue);
   };
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        height: "100%",
-      }}
-    >
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        sx={{ borderRight: 1, borderColor: "divider", width: "300px" }}
-      >
+    // <Box
+    //   sx={{
+    //     flexGrow: 1,
+    //     display: "flex",
+    //     height: "100%",
+    //   }}
+    // >
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={2}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value}
+          onChange={handleChange}
+          sx={{ borderRight: 1, borderColor: "divider" }}
+        >
+          {fleet.ships.map((ship: Ship, index: number) => (
+            <Tab
+              label={
+                ship.registration.name + " (" + ship.registration.role + ")"
+              }
+              key={ship.symbol}
+              {...a11yProps(index)}
+            />
+          ))}
+        </Tabs>
+      </Grid>
+      <Grid item xs={12} md={10}>
         {fleet.ships.map((ship: Ship, index: number) => (
-          <Tab
-            label={ship.registration.name + " (" + ship.registration.role + ")"}
-            key={ship.symbol}
-            {...a11yProps(index)}
-          />
+          <TabPanel value={value} index={index} key={ship.symbol}>
+            {/* the ships information */}
+            <Typography variant="h4">{ship.registration.name}</Typography>
+            <Stack direction="row" spacing={1}>
+              <Chip
+                label={"Crew: " + ship.crew.current + "/" + ship.crew.capacity}
+                size="small"
+                variant="outlined"
+              />
+              <Chip
+                label={"Fuel: " + ship.fuel.current + "/" + ship.fuel.capacity}
+                size="small"
+                variant="outlined"
+              />
+              <Chip
+                label={"Modules: " + ship.modules.length}
+                size="small"
+                variant="outlined"
+              />
+              <Chip
+                label={"Cargo: " + ship.cargo.units + "/" + ship.cargo.capacity}
+                size="small"
+                variant="outlined"
+              />
+              <Chip
+                label={"Mounts: " + ship.mounts.length}
+                size="small"
+                variant="outlined"
+              />
+              <Chip
+                label={ship.nav.flightMode}
+                size="small"
+                variant="outlined"
+              />
+              <Chip label={ship.nav.status} size="small" variant="outlined" />
+            </Stack>
+            <Divider />
+            <FleetShipPanel ship={ship} />
+          </TabPanel>
         ))}
-      </Tabs>
-      {fleet.ships.map((ship: Ship, index: number) => (
-        <TabPanel value={value} index={index} key={ship.symbol}>
-          {/* the ships information */}
-          <Typography variant="h4">{ship.registration.name}</Typography>
-          <Stack direction="row" spacing={1}>
-            <Chip
-              label={"Crew: " + ship.crew.current + "/" + ship.crew.capacity}
-              size="small"
-              variant="outlined"
-            />
-            <Chip
-              label={"Fuel: " + ship.fuel.current + "/" + ship.fuel.capacity}
-              size="small"
-              variant="outlined"
-            />
-            <Chip
-              label={"Modules: " + ship.modules.length}
-              size="small"
-              variant="outlined"
-            />
-            <Chip
-              label={"Cargo: " + ship.cargo.units + "/" + ship.cargo.capacity}
-              size="small"
-              variant="outlined"
-            />
-            <Chip
-              label={"Mounts: " + ship.mounts.length}
-              size="small"
-              variant="outlined"
-            />
-            <Chip label={ship.nav.flightMode} size="small" variant="outlined" />
-            <Chip label={ship.nav.status} size="small" variant="outlined" />
-          </Stack>
-          <Divider />
-          <FleetShipPanel ship={ship} />
-        </TabPanel>
-      ))}
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 
@@ -115,16 +127,12 @@ const Fleet: React.FC = () => {
   const { fleet, fetchFleet } = useSpaceTrader();
 
   fetchFleet();
-
-  return (
-    <>
-      {fleet ? (
-        <FleetData fleet={fleet} />
-      ) : (
-        <Skeleton animation="wave" variant="text" width="100%" height={120} />
-      )}
-    </>
-  );
+  if (!fleet) {
+    return (
+      <Skeleton animation="wave" variant="text" width="100%" height={120} />
+    );
+  }
+  return <FleetData fleet={fleet} />;
 };
 
 export default Fleet;
