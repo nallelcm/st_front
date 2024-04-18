@@ -15,11 +15,13 @@ import Profile from "./authcomp/Profile";
 import LoggedInPageLayout from "./layouts/LoggedInPageLayout";
 
 import { useAuth } from "../contexts/AuthProviderContext";
-import Fleet from "./authcomp/fleet/Fleet";
+import Fleet from "./authcomp/Fleet";
+import ContractPage from "./authcomp/ContractsPage";
 
 const routes = [
   { path: "/", element: <HomePage />, protected: true },
   { path: "/fleet", element: <Fleet />, protected: true },
+  { path: "/contracts", element: <ContractPage />, protected: true },
   { path: "/login", element: <Login />, protected: false },
   { path: "/register", element: <RegisterForm />, protected: false },
   { path: "/profile", element: <Profile />, protected: true },
