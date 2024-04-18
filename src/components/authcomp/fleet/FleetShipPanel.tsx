@@ -2,6 +2,7 @@ import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { Ship } from "../../../types";
 import { ReactNode, useState } from "react";
 import FleetNavigationTab from "./FleetNavigationTab";
+import FleetCargoTab from "./FleetCargoTab";
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -33,6 +34,11 @@ const FleetShipPanel: React.FC<FleetShipPanelProps> = ({ ship }) => {
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  const tabContent = [
+    { label: "Navigation", element: <FleetNavigationTab ship={ship} /> },
+    { label: "Cargo", element: <FleetCargoTab ship={ship} /> },
+    { label: "Information", element: <Typography>Info</Typography> },
+  ];
   return (
     <Box>
       <Tabs
@@ -43,49 +49,18 @@ const FleetShipPanel: React.FC<FleetShipPanelProps> = ({ ship }) => {
         onChange={handleChange}
         sx={{ borderBottom: 1, borderColor: "divider" }}
       >
-        <Tab label="Navigation" />
-        <Tab label="Crew" />
-        <Tab label="Frame" />
-        <Tab label="Reactor" />
-        <Tab label="Engine" />
-        <Tab label="Cargo" />
-        <Tab label="Modules" />
-        <Tab label="Mounts" />
-        <Tab label="Fuel" />
+        {tabContent.map((tab) => (
+          <Tab key={tab.label + "tab"} label={tab.label} />
+        ))}
       </Tabs>
-      <TabPanel
-        value={value}
-        index={0}
-        element={<FleetNavigationTab ship={ship} />}
-      />
-      <TabPanel
-        value={value}
-        index={1}
-        element={<FleetNavigationTab ship={ship} />}
-      >
-        <Typography>Crew</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <Typography>Frame</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <Typography>Reactor</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        <Typography>Engine</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={5}>
-        <Typography>Cargo</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={6}>
-        <Typography>Modules</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={7}>
-        <Typography>Mounts</Typography>
-      </TabPanel>
-      <TabPanel value={value} index={8}>
-        <Typography>Fuel</Typography>
-      </TabPanel>
+      {tabContent.map((tab, index) => (
+        <TabPanel
+          key={tab.label + "panel"}
+          value={value}
+          index={index}
+          element={tab.element}
+        />
+      ))}
     </Box>
   );
 };
