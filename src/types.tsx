@@ -132,6 +132,31 @@ export interface ShipFuel {
     timestamp: string;
   };
 }
+export interface ContractPayment {
+  onAccepted: number;
+  onFullfilled: number;
+}
+export interface ContractDeliverGood {
+  tradeSymbol: string;
+  destinationSymbol: string;
+  unitsRequired: number;
+  unitsFullfilled: number;
+}
+export interface ContractTerms {
+  deadline: Date;
+  payment: ContractPayment;
+  deliver: ContractDeliverGood[];
+}
+export interface Contract {
+  id: string;
+  factionSymbol: string;
+  type: ContractType;
+  terms: ContractTerms;
+  accepted: boolean;
+  fullfilled: boolean;
+  expiration: Date;
+  deadlineToAccept: Date;
+}
 export interface ShipRegistration {
   name: string;
   factionSymbol: string;
@@ -141,6 +166,16 @@ export interface FleetResponse {
   ships: Ship[];
   meta: Meta;
 }
+export interface ContractResponse {
+  contracts: Contract[];
+  meta: Meta;
+}
+/* 
+
+ENUMS
+
+*/
+
 export enum FlightModeType {
   DRIFT = "DRIFT",
   STEALTH = "STEALTH",
@@ -417,4 +452,9 @@ export enum SystemType {
   GRAVITY_WELL = "GRAVITY_WELL",
   ARTIFICIAL_GRAVITY_WELL = "ARTIFICIAL_GRAVITY_WELL",
   FUEL_STATION = "FUEL_STATION",
+}
+export enum ContractType {
+  PROCUREMENT = "PROCUREMENT",
+  TRANSPORT = "TRANSPORT",
+  SHUTTLE = "SHUTTLE",
 }

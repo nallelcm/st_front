@@ -22,6 +22,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 import { useAuth } from "../../contexts/AuthProviderContext";
 import { Fragment, useEffect, useState } from "react";
@@ -72,6 +73,7 @@ const LoggedInPageLayout = ({ children }: any) => {
   const menuItems = [
     { text: "Home", icon: <HomeIcon />, link: "/" },
     { text: "Fleet", icon: <RocketLaunchIcon />, link: "/fleet" },
+    { text: "Contracts", icon: <AssignmentIcon />, link: "/contracts" },
     {
       text: "Logout",
       icon: <LogoutIcon />,
