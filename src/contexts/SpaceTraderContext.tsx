@@ -15,6 +15,8 @@ interface SpaceTraderContextType {
     forceUpdate?: boolean,
     page?: number
   ) => Promise<ContractResponse | null>;
+  acceptContract: (contractId: string) => Promise<boolean>;
+  clearData: () => void;
 }
 
 const SpaceTraderContext = createContext<SpaceTraderContextType | undefined>(
@@ -102,6 +104,29 @@ export const SpaceTraderProvider: React.FC<{ children: ReactNode }> = ({
       return null;
     }
   };
+  const acceptContract = async (contractId: string): Promise<boolean> => {
+    try {
+      const { validateLogin } = useAuth();
+      await validateLogin();
+      const response = await SpaceTraderAPI.post(
+        `my/contracts/${contractId}/accept`
+      );
+      if (response.data.contract) {
+        return response.data.contract.accepted;
+      }
+      return false;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const clearData = () => {
+    console.log("clearing data");
+    setAgent(null);
+    setFleet(null);
+    setContracts(null);
+  };
   return (
     <SpaceTraderContext.Provider
       value={{
@@ -111,6 +136,8 @@ export const SpaceTraderProvider: React.FC<{ children: ReactNode }> = ({
         fetchFleet,
         contracts,
         fetchContracts,
+        acceptContract,
+        clearData,
       }}
     >
       {children}
