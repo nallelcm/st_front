@@ -170,6 +170,12 @@ export interface ContractResponse {
   contracts: Contract[];
   meta: Meta;
 }
+export interface SpaceTraderDateInfo {
+  date: Date;
+  remainingTime: string;
+  formattedDateTime: string;
+}
+
 /* 
 
 ENUMS
